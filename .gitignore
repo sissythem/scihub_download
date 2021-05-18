@@ -1,0 +1,8 @@
+output/
+.idea/
+__pycache__/
+venv/
+wvenv/
+resources/*.txt
+resources/*.bib
+resources/properties.yaml
