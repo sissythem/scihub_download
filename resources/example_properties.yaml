@@ -1,3 +1,5 @@
 output_dir: "path/to/output"
-resource: "bib" # options: bib, txt, cp
+input: "bib" # options: bib, txt, cp
 path_to_file: "" # only if resource is set to bib or txt
+doi_getter: "crossref"
+paper_resource: "scihub"
