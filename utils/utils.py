@@ -26,7 +26,7 @@ def preprocess_title(title: AnyStr) -> AnyStr:
 
 def load_properties() -> Dict:
     current_folder = getcwd()
-    folder = join(current_folder, "resources")
+    folder = join(current_folder, "../resources")
     properties_file = join(folder, "properties.yaml")
     examples_properties_file = join(folder, "example_properties.yaml")
     prop_file = properties_file if exists(properties_file) else examples_properties_file
