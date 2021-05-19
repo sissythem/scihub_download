@@ -27,6 +27,7 @@ class Executor:
         raise NotImplementedError
 
     def pdf_download_pipeline(self, title, doi=None):
+        self.logger.info(f"Getting pdf for article: {title}")
         if doi is None:
             doi = self.doi_getter.get_doi(title=title)
             if doi is None:
@@ -94,9 +95,9 @@ class BibExecutor(Executor):
                 title = entry["title"]
                 if "doi" in entry.keys() or "DOI" in entry.keys():
                     try:
-                        doi = entry["doi"]
+                        doi = entry["doi"].strip()
                     except(KeyError, Exception):
-                        doi = entry["DOI"]
+                        doi = entry["DOI"].strip()
                 pdf_url = self.pdf_download_pipeline(title=title, doi=doi)
                 if pdf_url is not None:
                     filename = pdf_url.split("/")[-1]
