@@ -44,7 +44,7 @@ class CrossrefDoiComponent(DoiComponent):
                     continue
                 for item_title in item_titles:
                     if item_title == title:
-                        doi = item["DOI"]
+                        doi = item["DOI"].strip()
                         break
                 if doi is not None:
                     break
