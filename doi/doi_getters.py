@@ -7,17 +7,14 @@ from utils import utils
 
 class DoiComponent:
 
-    def __init__(self, logger):
-        self.logger = logger
-
     def get_doi(self, title: AnyStr) -> Optional[AnyStr]:
         raise NotImplementedError
 
 
 class CrossrefDoiComponent(DoiComponent):
 
-    def __init__(self, logger):
-        super(CrossrefDoiComponent, self).__init__(logger=logger)
+    def __init__(self):
+        super(CrossrefDoiComponent, self).__init__()
 
     def get_doi(self, title: AnyStr) -> Optional[AnyStr]:
         """

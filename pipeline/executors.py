@@ -4,7 +4,8 @@ from typing import AnyStr
 
 from doi.doi_getters import CrossrefDoiComponent, DoiComponent
 from downloaders.downloaders import PdfDownloader, BibExporter
-from parsers.parsers import ScihubParser, Parser
+from parsers.parsers import Parser
+from parsers.parsers import Scihub as ScihubParser
 from readers.readers import TxtReader, ClipboardReader, BibReader, Reader
 
 
@@ -14,7 +15,7 @@ class Executor:
         self.logger = logger
         self.out_dir = out_dir
         if doi_getter == "crossref":
-            self.doi_getter = CrossrefDoiComponent(logger=logger)
+            self.doi_getter = CrossrefDoiComponent()
         else:
             self.doi_getter = DoiComponent(logger=logger)
         if doi_resource == "scihub":
