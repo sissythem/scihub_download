@@ -8,6 +8,7 @@ from parsers.parsers import get_pdf_url_resolver
 
 from downloaders.downloaders import get_bibtex_downloader, get_pdf_downloader
 
+from writers.bibtex import JsonToBibtexWriter
 from utils import utils
 import clipboard
 import logging
@@ -20,7 +21,7 @@ def get_args():
     parser.add_argument("-mode", help="Operation mode(s)", choices="pdf bibtex".split(), default="bibtex", nargs="*")
     parser.add_argument("-inputs", help="Inputs, either title string / bibtex path / text file path ", default=None)
 
-    parser.add_argument("--output_dir", help="Output directory for obtained pdfs.", default=join(getcwd(), "output", "pdfs"))
+    parser.add_argument("--output_dir", help="Output directory for obtained pdfs.", default=join(getcwd(), "output"))
 
     parser.add_argument("--pdf_getter", help="How to download pdfs.", default="wget")
     parser.add_argument("--doi_getter", help="Where to fetch DOIs from.", default="crossref")
@@ -69,8 +70,6 @@ def main():
         logging.debug(f"Creating output directory: {output_dir}")
         makedirs(output_dir)
 
-    logger = utils.get_logger(folder=join(getcwd(), "output", "logs"))
-
     if exists(inputs):
         # input is a file
         if inputs.endswith(".bib"):
@@ -107,9 +106,17 @@ def main():
             # executor.execute()
         elif m == "bibtex":
             bd = get_bibtex_downloader(bibtex_getter)
-            result = bd.download(inputs)
-            for res in result:
-                print(res["title"],res["author"][:5])
+            for query in inputs:
+                result = bd.download(query)
+                for res in result:
+                    print(res["title"],res["author"][:5])
+
+            output_file = join(output_dir, "bibtexs.bib")
+            wr = JsonToBibtexWriter()
+            wr.write_jsons(result, output_file)
+            
+
+
 
 
 
