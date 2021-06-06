@@ -12,6 +12,8 @@ from writers.bibtex import JsonToBibtexWriter
 from utils import utils
 import clipboard
 import logging
+import time
+from tqdm import tqdm
 
 def get_args():
     """Argument retrieval func"""
@@ -76,15 +78,18 @@ def main():
             # a bib file
             executor = BibExecutor(logger=logger, doi_getter=doi_getter, doi_resource=paper_resource, output_dir=output_dir, path_to_file=inputs)
             executor.execute()
+            inputs_type = "bibfile"
         else:
             # a regular text file
             with open(inputs) as f:
                 data = [x.strip() for x in f.readlines()]
                 data = [x for x in data if x]
-            iputs = data
+            inputs = data
+            inputs_type = "textfile"
     elif type(inputs) is str:
         # input
         inputs = [inputs]
+        inputs_type = "string"
 
     for m in mode:
         if m == "pdf":
@@ -95,7 +100,7 @@ def main():
                 pdf_url = url_resolver.resolve(inp)
                 if pdf_url is None:
                     continue
-                res = pdf_downloader.download(url) if url is not None else None
+                res = pdf_downloader.download(pdf_url) if pdf_url is not None else None
                 if res is None:
                     continue
                 results[inp] = res
@@ -106,14 +111,27 @@ def main():
             # executor.execute()
         elif m == "bibtex":
             bd = get_bibtex_downloader(bibtex_getter)
-            for query in inputs:
-                result = bd.download(query)
-                for res in result:
-                    print(res["title"],res["author"][:5])
+            no_result_queries = []
+            all_results = []
+            with tqdm() as pbar:
+                for i, query in tqdm(enumerate(inputs)):
+                    # logging.info(f"querying [{bibtex_getter}] with query {i+1}/{len(inputs)}: [{query}]")
+                    pbar.set_description(desc=f"querying [{bibtex_getter}] with query {i+1:4d}/{len(inputs):4d}: [{query}]")
+                    result = bd.download(query)
+                    for res in result:
+                        if res is None:
+                            no_result_queries.append((i, query))
+                        else:
+                            all_results.append(res)
+                        # print(res["title"],res["author"][:5])
 
-            output_file = join(output_dir, "bibtexs.bib")
+            output_file = join(output_dir, inputs_type + "_bibtexs_" + time.strftime("%d%m%y_%H%M%S") + ".bib")
             wr = JsonToBibtexWriter()
-            wr.write_jsons(result, output_file)
+            wr.write_jsons(all_results, output_file)
+
+            for idx, query in no_result_queries:
+                logging.warning(f"Could not find [{bibtex_getter}] results for {idx+1:4d}/{len(inputs):4d} [{query}]")
+
             
 
 

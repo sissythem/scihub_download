@@ -115,7 +115,6 @@ class BibsonomyBibDownloader(BibDownloader):
         return rdict
 
     def download(self, query):
-        logging.info(f"Querying bibsonomy with {query}")
         rs = bibsonomy.RestSource(self.username, self.api_key)
         query = " ".join((self.remove_punct(query).split()))
 
